@@ -5,7 +5,11 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue'), meta: { showBackButton: false } },
+      {
+        path: '',
+        component: () => import('pages/IndexPage.vue'),
+        meta: { showBackButton: false, title: 'Главная' },
+      },
     ],
   },
   {
@@ -14,8 +18,19 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('pages/NewNotePage.vue'),
-        meta: { showBackButton: true },
+        component: () => import('pages/EditNotePage.vue'),
+        meta: { showBackButton: true, title: 'Новая заметка' },
+      },
+    ],
+  },
+  {
+    path: '/edit',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/EditNotePage.vue'),
+        meta: { showBackButton: true, title: 'Редактировать заметку' },
       },
     ],
   },
@@ -26,7 +41,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         component: () => import('pages/ErrorNotFound.vue'),
-        meta: { showBackButton: true },
+        meta: { showBackButton: true, title: 'Страница не найдена' },
       },
     ],
   },
