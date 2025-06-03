@@ -7,20 +7,16 @@
             <h1>Заметок нет</h1>
         </div>
 
-        <q-card v-for="note in notes" :key="note.title" class="q-mb-md">
-            <q-card-section>
-                <div class="text-h6">{{ note.title }}</div>
-            </q-card-section>
-            <q-card-section>
-                <div v-html="note.description"></div>
-            </q-card-section>
-        </q-card>
+        <div class="row wrap justify-center">
+            <NoteCard v-for="note in notes" :key="note.id" :note="note" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useNotesStore } from 'stores/notes';
 import { computed } from 'vue';
+import NoteCard from './NoteCard.vue';
 
 const notesStore = useNotesStore();
 const notes = computed(() => notesStore.notes);
