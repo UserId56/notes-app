@@ -1,19 +1,16 @@
 <template>
-    <div>
-        <q-btn-group spread class="q-fab-bottom-right">
-            <q-btn icon="add" round color="primary" @click="$router.push('/new')" />
-            <q-btn icon="fullscreen" round color="primary" @click="toggleFullscreen" />
-            <q-btn :icon="isDarkMode ? 'light_mode' : 'dark_mode'" round color="primary" @click="toggleTheme" />
-        </q-btn-group>
+    <q-btn-group spread class="q-fab-bottom-right ">
+        <q-btn icon="add" round color="primary" @click="$router.push('/new')" />
+        <q-btn icon="fullscreen" round color="primary" @click="toggleFullscreen" />
+        <q-btn :icon="isDarkMode ? 'light_mode' : 'dark_mode'" round color="primary" @click="toggleTheme" />
+    </q-btn-group>
 
-        <div v-if="notes.length === 0" class="q-pa-md row justify-center items-center"
-            style="min-height: calc(100vh - 56px);">
-            <h1>Заметок нет</h1>
-        </div>
+    <div v-if="notes.length === 0" class="q-pa-md row justify-center items-center full-height">
+        <h1>Заметок нет</h1>
+    </div>
 
-        <div class="row wrap justify-start q-pa-xl">
-            <NoteCard v-for="note in notes" :key="note.id" :note="note" />
-        </div>
+    <div class="row wrap justify-start q-pa-xl">
+        <NoteCard v-for="note in notes" :key="note.id" :note="note" />
     </div>
 </template>
 

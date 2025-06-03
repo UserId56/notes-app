@@ -11,7 +11,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="full-height">
       <router-view />
     </q-page-container>
   </q-layout>
