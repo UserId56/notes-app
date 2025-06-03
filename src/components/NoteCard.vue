@@ -6,24 +6,24 @@
             <div v-html="note.description"></div>
         </q-card-section>
         <q-card-actions align="right">
-            <q-btn flat round dense icon="more_vert" @click="menu = !menu" />
-            <q-menu v-model="menu">
-                <q-list>
-                    <q-item clickable v-ripple @click="editNote">
-                        <q-item-section>Редактировать</q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple @click="deleteNote">
-                        <q-item-section>Удалить</q-item-section>
-                    </q-item>
-                </q-list>
-            </q-menu>
+            <div>
+                <q-btn-dropdown flat round dense class="menu-btn" auto-close no-icon>
+                    <q-list>
+                        <q-item clickable v-ripple @click="editNote">
+                            <q-item-section>Редактировать</q-item-section>
+                        </q-item>
+                        <q-item clickable v-ripple @click="deleteNote">
+                            <q-item-section>Удалить</q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-btn-dropdown>
+            </div>
         </q-card-actions>
     </q-card>
 </template>
 
 <script setup lang="ts">
 // Renamed component to `NoteCard` to comply with multi-word naming convention.
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotesStore } from 'stores/notes';
 
@@ -34,7 +34,6 @@ const props = defineProps({
     },
 });
 
-const menu = ref(false);
 const router = useRouter();
 const notesStore = useNotesStore();
 
@@ -54,5 +53,11 @@ function deleteNote() {
 .note-card {
     width: 335px;
     margin: 8px;
+}
+
+.menu-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
 }
 </style>

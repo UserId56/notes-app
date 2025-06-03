@@ -19,5 +19,12 @@ export const useNotesStore = defineStore('notes', {
       this.notes.push({ ...note, id: uuidv4() });
       this.saveNotes();
     },
+    editNote(note: { id: string; title: string; description: string }) {
+      const index = this.notes.findIndex((n) => n.id === note.id);
+      if (index !== -1) {
+        this.notes[index] = note;
+        this.saveNotes();
+      }
+    },
   },
 });
