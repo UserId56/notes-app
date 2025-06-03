@@ -1,9 +1,9 @@
 <template>
     <q-card class="note-card">
         <q-card-section>
-            <div class="text-h6">{{ note.title }}</div>
+            <div class="text-h6 q-my-md">{{ note.title }}</div>
             <q-separator />
-            <div v-html="note.description"></div>
+            <div class="q-my-md" v-html="note.description"></div>
         </q-card-section>
         <q-card-actions align="right">
             <div>
