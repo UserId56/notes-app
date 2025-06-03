@@ -81,7 +81,13 @@ async function createWindow() {
   });
 }
 
-void app.whenReady().then(createWindow);
+void app.whenReady().then(async () => {
+  try {
+    await createWindow();
+  } catch (error) {
+    console.error('Error during window creation:', error);
+  }
+});
 
 app.on('window-all-closed', () => {
   if (platform !== 'darwin') {

@@ -4,14 +4,31 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue'), meta: { showBackButton: false } },
+    ],
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
+  {
+    path: '/new',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/NewNotePage.vue'),
+        meta: { showBackButton: true },
+      },
+    ],
+  },
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/ErrorNotFound.vue'),
+        meta: { showBackButton: true },
+      },
+    ],
   },
 ];
 

@@ -1,8 +1,8 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn v-if="$router.options.history.state.back" flat dense round icon="arrow_back" aria-label="Back"
+        <q-btn v-if="$route.meta.showBackButton" flat dense round icon="arrow_back" aria-label="Back"
           @click="$router.back()" />
 
         <q-toolbar-title>
