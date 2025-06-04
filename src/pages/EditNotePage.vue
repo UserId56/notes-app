@@ -48,9 +48,13 @@ function saveNote() {
     if (title.value.trim() && description.value.trim()) {
         const noteId = route.query.id as string;
         if (noteId) {
-            notesStore.editNote({ id: noteId, title: title.value, description: description.value });
+            notesStore.editNote({ id: noteId, title: title.value, description: description.value }).catch((error) => {
+                console.error('Error editing note:', error);
+            });
         } else {
-            notesStore.addNote({ title: title.value, description: description.value });
+            notesStore.addNote({ title: title.value, description: description.value }).catch((error) => {
+                console.error('Error adding note:', error);
+            });
         }
         router.push('/').catch((error) => {
             console.error('Navigation error:', error);
