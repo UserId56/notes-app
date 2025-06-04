@@ -44,8 +44,9 @@ function editNote() {
 }
 
 function deleteNote() {
-    notesStore.notes = notesStore.notes.filter(n => n.id !== props.note.id);
-    notesStore.saveNotes();
+    notesStore.deleteNote(props.note.id).catch((error) => {
+        console.error('Error deleting note:', error);
+    });
 }
 </script>
 

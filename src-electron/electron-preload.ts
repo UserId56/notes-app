@@ -27,3 +27,11 @@
  *   }
  * }
  */
+
+import { contextBridge, ipcRenderer } from 'electron';
+
+contextBridge.exposeInMainWorld('notesAPI', {
+  getNotes: () => ipcRenderer.invoke('get-notes'),
+  saveNotes: (notes: Array<{ id: string; title: string; description: string }>) =>
+    ipcRenderer.invoke('save-notes', notes),
+});

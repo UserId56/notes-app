@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
@@ -18,7 +18,7 @@ function loadWindowState() {
     const state = JSON.parse(fs.readFileSync(windowStateFile, 'utf-8'));
     return {
       ...state,
-      fullscreen: state.fullscreen || false,
+      fullscreen: state.fullscreen ?? false,
     };
   } catch {
     return { width: 1000, height: 600, x: undefined, y: undefined, fullscreen: false };
@@ -27,14 +27,12 @@ function loadWindowState() {
 
 function saveWindowState(window: BrowserWindow) {
   const bounds = window.getBounds();
-  console.log('Bound console ____________________', bounds);
   const fullscreen = window.isFullScreen();
   fs.writeFileSync(windowStateFile, JSON.stringify({ ...bounds, fullscreen }));
 }
 
 async function createWindow() {
   const windowState = loadWindowState();
-  console.log('Window state loaded___________________:', windowState);
   /**
    * Initial window options
    */
@@ -59,7 +57,6 @@ async function createWindow() {
       ),
     },
   });
-  console.log('Main window created___________________:', mainWindow);
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show();
@@ -67,7 +64,7 @@ async function createWindow() {
   });
 
   // Показать скрыть верхний навбар
-  mainWindow.setMenuBarVisibility(true);
+  mainWindow.setMenuBarVisibility(false);
 
   if (process.env.DEV) {
     await mainWindow.loadURL(process.env.APP_URL);
@@ -93,6 +90,35 @@ async function createWindow() {
     mainWindow = undefined;
   });
 }
+
+const notesFilePath = path.join(app.getPath('userData'), 'notes.json');
+
+function loadNotesFromFile(): Array<{ id: string; title: string; description: string }> {
+  try {
+    if (!fs.existsSync(notesFilePath)) {
+      fs.writeFileSync(notesFilePath, JSON.stringify([]));
+    }
+    const data = fs.readFileSync(notesFilePath, 'utf-8');
+    return JSON.parse(data);
+  } catch {
+    return [];
+  }
+}
+
+function saveNotesToFile(notes: Array<{ id: string; title: string; description: string }>) {
+  fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2));
+}
+
+ipcMain.handle('get-notes', () => {
+  return loadNotesFromFile();
+});
+
+ipcMain.handle(
+  'save-notes',
+  (event, notes: Array<{ id: string; title: string; description: string }>) => {
+    saveNotesToFile(notes);
+  },
+);
 
 void app.whenReady().then(async () => {
   try {

@@ -1,30 +1,34 @@
 import { defineStore } from 'pinia';
-import { v4 as uuidv4 } from 'uuid';
 
 export const useNotesStore = defineStore('notes', {
   state: () => ({
     notes: [] as Array<{ id: string; title: string; description: string }>,
   }),
   actions: {
-    loadNotes() {
-      const storedNotes = localStorage.getItem('notes');
-      if (storedNotes) {
-        this.notes = JSON.parse(storedNotes);
+    async loadNotes() {
+      const notesFromFile = await window.notesAPI.getNotes();
+      if (notesFromFile.length === 0) {
+        const storedNotes = localStorage.getItem('notes');
+        this.notes = storedNotes ? JSON.parse(storedNotes) : [];
+      } else {
+        this.notes = notesFromFile;
       }
     },
-    saveNotes() {
-      localStorage.setItem('notes', JSON.stringify(this.notes));
+    async addNote(note: { title: string; description: string }) {
+      const serializableNote = { ...note, id: crypto.randomUUID() };
+      this.notes.push(serializableNote);
+      await window.notesAPI.saveNotes(this.notes.map((n) => ({ ...n })));
     },
-    addNote(note: { title: string; description: string }) {
-      this.notes.push({ ...note, id: uuidv4() });
-      this.saveNotes();
-    },
-    editNote(note: { id: string; title: string; description: string }) {
+    async editNote(note: { id: string; title: string; description: string }) {
       const index = this.notes.findIndex((n) => n.id === note.id);
       if (index !== -1) {
         this.notes[index] = note;
-        this.saveNotes();
+        await window.notesAPI.saveNotes(this.notes.map((n) => ({ ...n })));
       }
+    },
+    async deleteNote(id: string) {
+      this.notes = this.notes.filter((note) => note.id !== id);
+      await window.notesAPI.saveNotes(this.notes.map((n) => ({ ...n })));
     },
   },
 });
