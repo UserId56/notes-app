@@ -48,11 +48,23 @@ function saveNote() {
     if (title.value.trim() && description.value.trim()) {
         const noteId = route.query.id as string;
         if (noteId) {
-            notesStore.editNote({ id: noteId, title: title.value, description: description.value }).catch((error) => {
+            notesStore.editNote({
+                id: noteId,
+                title: title.value,
+                description: description.value,
+                isTask: false,
+                isArchive: false,
+            }).catch((error) => {
                 console.error('Error editing note:', error);
             });
         } else {
-            notesStore.addNote({ title: title.value, description: description.value }).catch((error) => {
+            notesStore.addNote({
+                id: crypto.randomUUID(),
+                title: title.value,
+                description: description.value,
+                isTask: false,
+                isArchive: false,
+            }).catch((error) => {
                 console.error('Error adding note:', error);
             });
         }

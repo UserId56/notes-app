@@ -26,10 +26,12 @@
 // Renamed component to `NoteCard` to comply with multi-word naming convention.
 import { useRouter } from 'vue-router';
 import { useNotesStore } from 'stores/notes';
+import type { Note } from '../models/note';
+import type { PropType } from 'vue';
 
 const props = defineProps({
     note: {
-        type: Object,
+        type: Object as PropType<Note>,
         required: true,
     },
 });

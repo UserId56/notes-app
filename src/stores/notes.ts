@@ -1,25 +1,21 @@
 import { defineStore } from 'pinia';
+import type { Note } from '../models/note';
 
 export const useNotesStore = defineStore('notes', {
   state: () => ({
-    notes: [] as Array<{ id: string; title: string; description: string }>,
+    notes: [] as Array<Note>,
   }),
   actions: {
     async loadNotes() {
       const notesFromFile = await window.notesAPI.getNotes();
-      if (notesFromFile.length === 0) {
-        const storedNotes = localStorage.getItem('notes');
-        this.notes = storedNotes ? JSON.parse(storedNotes) : [];
-      } else {
-        this.notes = notesFromFile;
-      }
+      this.notes = notesFromFile;
     },
-    async addNote(note: { title: string; description: string }) {
-      const serializableNote = { ...note, id: crypto.randomUUID() };
+    async addNote(note: Note) {
+      const serializableNote: Note = { ...note, id: crypto.randomUUID() };
       this.notes.push(serializableNote);
       await window.notesAPI.saveNotes(this.notes.map((n) => ({ ...n })));
     },
-    async editNote(note: { id: string; title: string; description: string }) {
+    async editNote(note: Note) {
       const index = this.notes.findIndex((n) => n.id === note.id);
       if (index !== -1) {
         this.notes[index] = note;

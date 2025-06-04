@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import type { Note } from '../src/models/note';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -93,32 +94,40 @@ async function createWindow() {
 
 const notesFilePath = path.join(app.getPath('userData'), 'notes.json');
 
-function loadNotesFromFile(): Array<{ id: string; title: string; description: string }> {
+function loadNotesFromFile(): Array<Note> {
   try {
     if (!fs.existsSync(notesFilePath)) {
       fs.writeFileSync(notesFilePath, JSON.stringify([]));
     }
     const data = fs.readFileSync(notesFilePath, 'utf-8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    const notes: Array<Note> = parsed.map(
+      (note: Partial<Note>): Note => ({
+        id: note.id ?? crypto.randomUUID(),
+        title: note.title ?? '',
+        description: note.description ?? '',
+        isTask: typeof note.isTask === 'boolean' ? note.isTask : false,
+        isArchive: typeof note.isArchive === 'boolean' ? note.isArchive : false,
+      }),
+    );
+    console.log('Loaded notes:', notes);
+    return notes;
   } catch {
     return [];
   }
 }
 
-function saveNotesToFile(notes: Array<{ id: string; title: string; description: string }>) {
+function saveNotesToFile(notes: Array<Note>) {
   fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2));
 }
 
-ipcMain.handle('get-notes', () => {
+ipcMain.handle('get-notes', (): Array<Note> => {
   return loadNotesFromFile();
 });
 
-ipcMain.handle(
-  'save-notes',
-  (event, notes: Array<{ id: string; title: string; description: string }>) => {
-    saveNotesToFile(notes);
-  },
-);
+ipcMain.handle('save-notes', (event, notes: Array<Note>) => {
+  saveNotesToFile(notes);
+});
 
 void app.whenReady().then(async () => {
   try {
