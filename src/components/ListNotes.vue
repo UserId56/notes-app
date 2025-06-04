@@ -16,13 +16,22 @@
 
 <script setup lang="ts">
 import { useNotesStore } from 'stores/notes';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { Dark } from 'quasar';
 import NoteCard from './NoteCard.vue';
 
 const notesStore = useNotesStore();
 const notes = computed(() => notesStore.notes);
 const isDarkMode = ref(Dark.isActive);
+
+onMounted(() => {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+        const isDark = storedTheme === 'dark';
+        Dark.set(isDark);
+        isDarkMode.value = isDark;
+    }
+});
 
 function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -37,8 +46,10 @@ function toggleFullscreen() {
 }
 
 function toggleTheme() {
+    const newTheme = !isDarkMode.value ? 'dark' : 'light';
     Dark.set(!isDarkMode.value);
     isDarkMode.value = !isDarkMode.value;
+    localStorage.setItem('theme', newTheme);
 }
 </script>
 

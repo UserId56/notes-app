@@ -15,30 +15,37 @@ const windowStateFile = path.join(app.getPath('userData'), 'window-state.json');
 
 function loadWindowState() {
   try {
-    return JSON.parse(fs.readFileSync(windowStateFile, 'utf-8'));
+    const state = JSON.parse(fs.readFileSync(windowStateFile, 'utf-8'));
+    return {
+      ...state,
+      fullscreen: state.fullscreen || false,
+    };
   } catch {
-    return { width: 1000, height: 600, x: undefined, y: undefined };
+    return { width: 1000, height: 600, x: undefined, y: undefined, fullscreen: false };
   }
 }
 
 function saveWindowState(window: BrowserWindow) {
   const bounds = window.getBounds();
-  fs.writeFileSync(windowStateFile, JSON.stringify(bounds));
+  console.log('Bound console ____________________', bounds);
+  const fullscreen = window.isFullScreen();
+  fs.writeFileSync(windowStateFile, JSON.stringify({ ...bounds, fullscreen }));
 }
 
 async function createWindow() {
   const windowState = loadWindowState();
-
+  console.log('Window state loaded___________________:', windowState);
   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
+    show: false,
     icon: path.resolve(currentDir, 'icons/icon.png'), // tray icon
     width: windowState.width,
     height: windowState.height,
     x: windowState.x,
     y: windowState.y,
-    fullscreen: false,
+    fullscreen: windowState.fullscreen,
     useContentSize: true,
     webPreferences: {
       contextIsolation: true,
@@ -51,6 +58,12 @@ async function createWindow() {
         ),
       ),
     },
+  });
+  console.log('Main window created___________________:', mainWindow);
+
+  mainWindow.on('ready-to-show', () => {
+    mainWindow?.show();
+    mainWindow?.maximize();
   });
 
   // Показать скрыть верхний навбар
