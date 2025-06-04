@@ -91,7 +91,7 @@ async function createWindow() {
   });
 }
 
-const notesFilePath = path.join(currentDir, 'notes.json');
+const notesFilePath = path.join(app.getPath('userData'), 'notes.json');
 
 function loadNotesFromFile(): Array<{ id: string; title: string; description: string }> {
   try {
