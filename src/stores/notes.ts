@@ -17,7 +17,6 @@ export const useNotesStore = defineStore('notes', {
     async addNote(note: { title: string; description: string }) {
       const serializableNote = { ...note, id: crypto.randomUUID() };
       this.notes.push(serializableNote);
-      console.log('Adding note:', this.notes);
       await window.notesAPI.saveNotes(this.notes.map((n) => ({ ...n })));
     },
     async editNote(note: { id: string; title: string; description: string }) {

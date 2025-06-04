@@ -116,7 +116,6 @@ ipcMain.handle('get-notes', () => {
 ipcMain.handle(
   'save-notes',
   (event, notes: Array<{ id: string; title: string; description: string }>) => {
-    console.log('Saving notes:', notes);
     saveNotesToFile(notes);
   },
 );
