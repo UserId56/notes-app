@@ -5,5 +5,8 @@ export type Note = {
   description: string;
   isTask: boolean;
   isArchive: boolean;
-  isCompleted?: boolean;
+  taskData: {
+    dueDate: string;
+    isCompleted: boolean;
+  };
 };

@@ -4,7 +4,15 @@
             <q-input v-model="title" label="Заголовок" class="q-mb-md" />
             <q-editor v-model="description" label="Описание" class="q-mb-md" toolbar-outline
                 :toolbar="toolbarForEditor" />
-            <q-btn type="submit" :label="route.query.id ? 'Изменить заметку' : 'Добавить заметку'" color="primary" />
+            <q-checkbox v-model="isTask" label="Является задачей" class="q-mb-md" />
+            <div v-if="isTask" class="q-mb-md q-gutter-md row items-center">
+                <q-date v-model="dueDate" mask="YYYY-MM-DD HH:mm" label="Дата выполнения" class="q-w-full" />
+                <q-time v-model="dueDate" mask="YYYY-MM-DD HH:mm" label="Время выполнения" class="q-w-full" />
+            </div>
+            <div class="q-mt-md">
+                <q-btn type="submit" :label="route.query.id ? 'Изменить заметку' : 'Добавить заметку'"
+                    color="primary" />
+            </div>
         </q-form>
     </div>
 </template>
@@ -13,9 +21,12 @@
 import { ref, onMounted } from 'vue';
 import { useNotesStore } from 'stores/notes';
 import { useRouter, useRoute } from 'vue-router';
+import { getCurrentFormattedDate } from '../utils/dateUtils';
 
 const title = ref('');
 const description = ref('');
+const isTask = ref(false);
+const dueDate = ref(getCurrentFormattedDate()); // Default to current date and time
 const notesStore = useNotesStore();
 const router = useRouter();
 const route = useRoute();
@@ -47,27 +58,28 @@ const toolbarForEditor = toolbarConfig.map(group => group.commands);
 function saveNote() {
     if (title.value.trim() && description.value.trim()) {
         const noteId = route.query.id as string;
+        const noteData = {
+            id: noteId || crypto.randomUUID(),
+            title: title.value,
+            description: description.value,
+            isTask: isTask.value,
+            taskData: {
+                dueDate: isTask.value ? dueDate.value : '',
+                isCompleted: false,
+            },
+            isArchive: false,
+        };
+
         if (noteId) {
-            notesStore.editNote({
-                id: noteId,
-                title: title.value,
-                description: description.value,
-                isTask: false,
-                isArchive: false,
-            }).catch((error) => {
+            notesStore.editNote(noteData).catch((error) => {
                 console.error('Error editing note:', error);
             });
         } else {
-            notesStore.addNote({
-                id: crypto.randomUUID(),
-                title: title.value,
-                description: description.value,
-                isTask: false,
-                isArchive: false,
-            }).catch((error) => {
+            notesStore.addNote(noteData).catch((error) => {
                 console.error('Error adding note:', error);
             });
         }
+
         router.push('/').catch((error) => {
             console.error('Navigation error:', error);
         });
@@ -81,6 +93,8 @@ onMounted(() => {
         if (note) {
             title.value = note.title;
             description.value = note.description;
+            isTask.value = note.isTask || false;
+            dueDate.value = note.taskData?.dueDate || new Date().toISOString().slice(0, 16);
         }
     }
 });

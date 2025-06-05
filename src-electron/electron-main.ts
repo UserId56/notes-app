@@ -65,7 +65,7 @@ async function createWindow() {
   });
 
   // Показать скрыть верхний навбар
-  mainWindow.setMenuBarVisibility(false);
+  mainWindow.setMenuBarVisibility(true);
 
   if (process.env.DEV) {
     await mainWindow.loadURL(process.env.APP_URL);
@@ -100,17 +100,7 @@ function loadNotesFromFile(): Array<Note> {
       fs.writeFileSync(notesFilePath, JSON.stringify([]));
     }
     const data = fs.readFileSync(notesFilePath, 'utf-8');
-    const parsed = JSON.parse(data);
-    const notes: Array<Note> = parsed.map(
-      (note: Partial<Note>): Note => ({
-        id: note.id ?? crypto.randomUUID(),
-        title: note.title ?? '',
-        description: note.description ?? '',
-        isTask: typeof note.isTask === 'boolean' ? note.isTask : false,
-        isArchive: typeof note.isArchive === 'boolean' ? note.isArchive : false,
-      }),
-    );
-    console.log('Loaded notes:', notes);
+    const notes: Array<Note> = JSON.parse(data);
     return notes;
   } catch {
     return [];
@@ -126,6 +116,7 @@ ipcMain.handle('get-notes', (): Array<Note> => {
 });
 
 ipcMain.handle('save-notes', (event, notes: Array<Note>) => {
+  console.log('Saving notes:', notes);
   saveNotesToFile(notes);
 });
 

@@ -9,11 +9,25 @@
             <div>
                 <q-btn-dropdown flat round dense class="menu-btn" auto-close no-icon>
                     <q-list>
+                        <q-item v-if="note.isTask && !note.taskData?.isCompleted" clickable v-ripple
+                            @click="completeTask">
+                            <q-item-section>Завершить</q-item-section>
+                        </q-item>
+                        <q-item v-if="note.isTask && note.taskData?.isCompleted" clickable v-ripple @click="revertTask">
+                            <q-item-section>Вернуть</q-item-section>
+                        </q-item>
                         <q-item clickable v-ripple @click="editNote">
+
                             <q-item-section>Редактировать</q-item-section>
                         </q-item>
                         <q-item clickable v-ripple @click="deleteNote">
                             <q-item-section>Удалить</q-item-section>
+                        </q-item>
+                        <q-item v-if="!note.isArchive" clickable v-ripple @click="archiveNote">
+                            <q-item-section>В архив</q-item-section>
+                        </q-item>
+                        <q-item v-if="note.isArchive" clickable v-ripple @click="unarchiveNote">
+                            <q-item-section>Из архива</q-item-section>
                         </q-item>
                     </q-list>
                 </q-btn-dropdown>
@@ -48,6 +62,30 @@ function editNote() {
 function deleteNote() {
     notesStore.deleteNote(props.note.id).catch((error) => {
         console.error('Error deleting note:', error);
+    });
+}
+
+function completeTask() {
+    notesStore.completeTask(props.note.id).catch((error: unknown) => {
+        console.error('Error completing task:', error);
+    });
+}
+
+function revertTask() {
+    notesStore.revertTask(props.note.id).catch((error: unknown) => {
+        console.error('Error reverting task:', error);
+    });
+}
+
+function archiveNote() {
+    notesStore.archiveNote(props.note.id).catch((error: unknown) => {
+        console.error('Error archiving note:', error);
+    });
+}
+
+function unarchiveNote() {
+    notesStore.unarchiveNote(props.note.id).catch((error: unknown) => {
+        console.error('Error unarchiving note:', error);
     });
 }
 </script>
