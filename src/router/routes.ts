@@ -35,6 +35,17 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/Archive',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/ArchivePage.vue'),
+        meta: { showBackButton: true, title: 'Архив' },
+      },
+    ],
+  },
+  {
     path: '/:catchAll(.*)*',
     component: () => import('layouts/MainLayout.vue'),
     children: [

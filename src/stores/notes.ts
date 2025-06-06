@@ -70,5 +70,11 @@ export const useNotesStore = defineStore('notes', {
         await window.notesAPI.saveNotes(serializeNotes(this.notes));
       }
     },
+    getActiveNotes() {
+      return this.notes.filter((note) => !note.isArchive);
+    },
+    getArchivedNotes() {
+      return this.notes.filter((note) => note.isArchive);
+    },
   },
 });

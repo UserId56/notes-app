@@ -4,6 +4,9 @@
             <div class="text-h6 q-my-md">{{ note.title }}</div>
             <q-separator />
             <div class="q-my-md" v-html="note.description"></div>
+            <div v-if="note.isTask" :class="taskDeadlineColor">
+                Выполнить до {{ note.taskData?.dueDate }}
+            </div>
         </q-card-section>
         <q-card-actions align="right">
             <div>
@@ -38,10 +41,12 @@
 
 <script setup lang="ts">
 // Renamed component to `NoteCard` to comply with multi-word naming convention.
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotesStore } from 'stores/notes';
 import type { Note } from '../models/note';
 import type { PropType } from 'vue';
+import getTaskDeadlineColor from '../utils/taskUtils';
 
 const props = defineProps({
     note: {
@@ -52,6 +57,26 @@ const props = defineProps({
 
 const router = useRouter();
 const notesStore = useNotesStore();
+
+const currentDate = ref(new Date().toISOString());
+
+const taskDeadlineColor = computed(() => {
+    return getTaskDeadlineColor(props.note.taskData?.dueDate || '', currentDate.value);
+});
+
+let intervalId: ReturnType<typeof setInterval> | undefined;
+
+onMounted(() => {
+    intervalId = setInterval(() => {
+        currentDate.value = new Date().toISOString();
+    }, 60000); // Обновление каждую минуту
+});
+
+onUnmounted(() => {
+    if (intervalId !== undefined) {
+        clearInterval(intervalId);
+    }
+});
 
 function editNote() {
     router.push(`/edit?id=${props.note.id}`).catch((error) => {
