@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import type { Note } from '../src/models/note';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -64,7 +65,7 @@ async function createWindow() {
   });
 
   // Показать скрыть верхний навбар
-  mainWindow.setMenuBarVisibility(false);
+  mainWindow.setMenuBarVisibility(true);
 
   if (process.env.DEV) {
     await mainWindow.loadURL(process.env.APP_URL);
@@ -93,32 +94,31 @@ async function createWindow() {
 
 const notesFilePath = path.join(app.getPath('userData'), 'notes.json');
 
-function loadNotesFromFile(): Array<{ id: string; title: string; description: string }> {
+function loadNotesFromFile(): Array<Note> {
   try {
     if (!fs.existsSync(notesFilePath)) {
       fs.writeFileSync(notesFilePath, JSON.stringify([]));
     }
     const data = fs.readFileSync(notesFilePath, 'utf-8');
-    return JSON.parse(data);
+    const notes: Array<Note> = JSON.parse(data);
+    return notes;
   } catch {
     return [];
   }
 }
 
-function saveNotesToFile(notes: Array<{ id: string; title: string; description: string }>) {
+function saveNotesToFile(notes: Array<Note>) {
   fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2));
 }
 
-ipcMain.handle('get-notes', () => {
+ipcMain.handle('get-notes', (): Array<Note> => {
   return loadNotesFromFile();
 });
 
-ipcMain.handle(
-  'save-notes',
-  (event, notes: Array<{ id: string; title: string; description: string }>) => {
-    saveNotesToFile(notes);
-  },
-);
+ipcMain.handle('save-notes', (event, notes: Array<Note>) => {
+  console.log('Saving notes:', notes);
+  saveNotesToFile(notes);
+});
 
 void app.whenReady().then(async () => {
   try {

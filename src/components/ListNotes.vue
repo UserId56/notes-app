@@ -3,6 +3,7 @@
         <q-btn icon="add" round color="primary" @click="$router.push('/new')" />
         <q-btn icon="fullscreen" round color="primary" @click="toggleFullscreen" />
         <q-btn :icon="isDarkMode ? 'light_mode' : 'dark_mode'" round color="primary" @click="toggleTheme" />
+        <q-btn :icon="route.path === '/Archive' ? 'home' : 'archive'" round color="primary" @click="$router.push(route.path === '/Archive' ? '/' : '/Archive')" />
     </q-btn-group>
 
     <div v-if="notes.length === 0" class="q-pa-md row justify-center items-center full-height">
@@ -19,9 +20,18 @@ import { useNotesStore } from 'stores/notes';
 import { computed, ref, onMounted } from 'vue';
 import { Dark } from 'quasar';
 import NoteCard from './NoteCard.vue';
+import { useRoute } from 'vue-router';
 
 const notesStore = useNotesStore();
-const notes = computed(() => notesStore.notes);
+const route = useRoute();
+const notes = computed(() => {
+    if (route.path === '/') {
+        return notesStore.getActiveNotes();
+    } else if (route.path === '/Archive') {
+        return notesStore.getArchivedNotes();
+    }
+    return [];
+});
 const isDarkMode = ref(Dark.isActive);
 
 onMounted(() => {

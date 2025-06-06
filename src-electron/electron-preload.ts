@@ -29,9 +29,9 @@
  */
 
 import { contextBridge, ipcRenderer } from 'electron';
+import type { Note } from '../src/models/note';
 
 contextBridge.exposeInMainWorld('notesAPI', {
-  getNotes: () => ipcRenderer.invoke('get-notes'),
-  saveNotes: (notes: Array<{ id: string; title: string; description: string }>) =>
-    ipcRenderer.invoke('save-notes', notes),
+  getNotes: (): Promise<Note[]> => ipcRenderer.invoke('get-notes'),
+  saveNotes: (notes: Note[]) => ipcRenderer.invoke('save-notes', notes),
 });
