@@ -4,8 +4,8 @@
             <div class="text-h6 q-my-md">{{ note.title }}</div>
             <q-separator />
             <div class="q-my-md" v-html="note.description"></div>
-            <div v-if="note.isTask" :class="taskDeadlineColor">
-                Выполнить до {{ note.taskData?.dueDate }}
+            <div v-if="note.isTask" class="row items-center">
+                Выполнить до <div class="q-ml-md" :class="taskDeadlineColor">{{ note.taskData?.dueDate }}</div>
             </div>
         </q-card-section>
         <q-card-actions align="right">

@@ -9,6 +9,7 @@
                 <q-date v-model="dueDate" mask="YYYY-MM-DD HH:mm" label="Дата выполнения" class="q-w-full" />
                 <q-time v-model="dueDate" mask="YYYY-MM-DD HH:mm" label="Время выполнения" class="q-w-full" />
             </div>
+            <q-input v-model="index" type="number" label="Индекс" class="q-mb-md" hide-bottom-space />
             <div class="q-mt-md">
                 <q-btn type="submit" :label="route.query.id ? 'Изменить заметку' : 'Добавить заметку'"
                     color="primary" />
@@ -27,6 +28,7 @@ const title = ref('');
 const description = ref('');
 const isTask = ref(false);
 const dueDate = ref(getCurrentFormattedDate()); // Default to current date and time
+const index = ref<number>(0); // Ensure index is a number
 const notesStore = useNotesStore();
 const router = useRouter();
 const route = useRoute();
@@ -68,6 +70,7 @@ function saveNote() {
                 isCompleted: false,
             },
             isArchive: false,
+            index: Number(index.value), // Ensure index is saved as a number
         };
 
         if (noteId) {
@@ -95,6 +98,7 @@ onMounted(() => {
             description.value = note.description;
             isTask.value = note.isTask || false;
             dueDate.value = note.taskData?.dueDate || new Date().toISOString().slice(0, 16);
+            index.value = note.index || 0; // Set index value for editing
         }
     }
 });

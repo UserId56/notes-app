@@ -7,14 +7,15 @@ import type { Note } from '../models/note';
  */
 export function serializeNotes(notes: Note[]): Note[] {
   return notes.map((n) => ({
-    id: n.id,
-    title: n.title,
-    description: n.description,
-    isTask: n.isTask,
-    isArchive: n.isArchive,
+    id: n.id ?? '',
+    title: n.title ?? '',
+    description: n.description ?? '',
+    isTask: n.isTask ?? false,
+    isArchive: n.isArchive ?? false,
     taskData: {
-      dueDate: n.taskData.dueDate,
-      isCompleted: n.taskData.isCompleted,
+      dueDate: n.taskData?.dueDate ?? '',
+      isCompleted: n.taskData?.isCompleted ?? false,
     },
+    index: n.index ?? 999, // Использован оператор nullish coalescing для всех полей
   }));
 }

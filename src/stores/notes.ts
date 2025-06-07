@@ -9,6 +9,7 @@ export const useNotesStore = defineStore('notes', {
   actions: {
     async loadNotes() {
       const notesFromFile = await window.notesAPI.getNotes();
+      // @ts-expect-error: Partial note objects are being serialized, missing properties will be handled by serializeNotes
       this.notes = serializeNotes(notesFromFile);
     },
     async addNote(note: Note) {
@@ -34,6 +35,7 @@ export const useNotesStore = defineStore('notes', {
       }
       if (note.isTask && note.taskData) {
         note.taskData.isCompleted = true;
+        note.isArchive = true;
         await window.notesAPI.saveNotes(serializeNotes(this.notes));
       }
     },
@@ -45,6 +47,7 @@ export const useNotesStore = defineStore('notes', {
       }
       if (note.isTask && note.taskData) {
         note.taskData.isCompleted = false;
+        note.isArchive = false;
         await window.notesAPI.saveNotes(serializeNotes(this.notes));
       }
     },
@@ -71,10 +74,10 @@ export const useNotesStore = defineStore('notes', {
       }
     },
     getActiveNotes() {
-      return this.notes.filter((note) => !note.isArchive);
+      return this.notes.filter((note) => !note.isArchive).sort((a, b) => a.index - b.index); // Сортировка по полю index
     },
     getArchivedNotes() {
-      return this.notes.filter((note) => note.isArchive);
+      return this.notes.filter((note) => note.isArchive).sort((a, b) => a.index - b.index); // Сортировка по полю index
     },
   },
 });

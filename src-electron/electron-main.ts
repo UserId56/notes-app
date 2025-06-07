@@ -65,7 +65,7 @@ async function createWindow() {
   });
 
   // Показать скрыть верхний навбар
-  mainWindow.setMenuBarVisibility(true);
+  mainWindow.setMenuBarVisibility(false);
 
   if (process.env.DEV) {
     await mainWindow.loadURL(process.env.APP_URL);

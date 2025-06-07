@@ -9,4 +9,5 @@ export type Note = {
     dueDate: string;
     isCompleted: boolean;
   };
+  index: number; // Добавлено поле index
 };
